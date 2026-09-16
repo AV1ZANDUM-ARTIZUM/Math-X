@@ -1,9 +1,11 @@
 {
-  "name": "Math-X Proxy Pro",
-  "short_name": "Proxy Pro",
+  "name": "Math-X Browser",
+  "short_name": "Math-X",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#080c18",
   "theme_color": "#0b1020",
-  "description": "Math-X Proxy Pro browser-only mini browser"
+  "description": "Math-X browser-only local-first mini browser",
+  "categories": ["utilities", "productivity", "education"]
 }

@@ -42,7 +42,6 @@ def rate_limited():
     if len(bucket) >= RATE_LIMIT:
         return True
     bucket.append(now)
-    # Prevent abandoned client keys from growing forever.
     if len(RATE_BUCKETS) > 5000:
         for key in list(RATE_BUCKETS)[:1000]:
             if not RATE_BUCKETS[key]:
@@ -87,14 +86,16 @@ def safe_target(raw):
             ip = ipaddress.ip_address(info[4][0])
         except ValueError:
             raise ValueError("Destination resolved to an invalid address.")
-        # is_global rejects loopback, private, link-local, multicast,
-        # reserved, unspecified and other non-public address ranges.
         if not ip.is_global:
             raise ValueError(
                 "Private, local, link-local, multicast, or reserved destinations are blocked."
             )
 
-    netloc = host if port is None else f"{host}:{port}"
+    # IPv6 literals need brackets when a port is present.
+    netloc = host
+    if port is not None:
+        netloc = f"[{host}]" if ":" in host else host
+        netloc = f"{netloc}:{port}"
     return p._replace(netloc=netloc).geturl()
 
 
@@ -132,13 +133,12 @@ def rewrite_css(text, base_url):
         rewritten = proxify_url(raw, base_url)
         return match.group(1) + '"' + rewritten + '"' if rewritten else match.group(0)
 
-    text = re.sub(
+    return re.sub(
         r'(@import\s+)["\']([^"\']+)["\']',
         import_repl,
         text,
         flags=re.I,
     )
-    return text
 
 
 def rewrite_srcset(value, base_url):
@@ -175,22 +175,16 @@ def rewrite_html(text, base_url):
         )
 
     text = pattern.sub(attr_repl, text)
-
     srcset_pattern = re.compile(
         r'(?P<attr>\bsrcset)(?P<eq>\s*=\s*)(?P<q>["\'])(?P<value>.*?)(?P=q)',
         re.I | re.S,
     )
     text = srcset_pattern.sub(
         lambda m: (
-            m.group("attr")
-            + m.group("eq")
-            + m.group("q")
-            + rewrite_srcset(m.group("value"), base_url)
-            + m.group("q")
-        ),
-        text,
+            m.group("attr") + m.group("eq") + m.group("q")
+            + rewrite_srcset(m.group("value"), base_url) + m.group("q")
+        ), text,
     )
-
     text = re.sub(r"<base\b[^>]*>", "", text, flags=re.I)
 
     def style_repl(match):
@@ -207,52 +201,45 @@ def rewrite_html(text, base_url):
         rewritten = proxify_url(raw, base_url)
         if not rewritten:
             return match.group(0)
-        new_content = content[: url_match.start(2)] + rewritten + content[url_match.end(2) :]
+        new_content = content[:url_match.start(2)] + rewritten + content[url_match.end(2):]
         return match.group(0).replace(content, new_content, 1)
 
-    text = re.sub(
+    return re.sub(
         r'<meta\b[^>]*\bcontent\s*=\s*["\']([^"\']+)["\'][^>]*>',
         refresh_repl,
         text,
         flags=re.I,
     )
-    return text
 
 
 def fetch_remote(target):
     current = safe_target(target)
     session = requests.Session()
     headers = {
-        "User-Agent": "Math-X-Proxy/3.0 (+safe-server-proxy)",
+        "User-Agent": "Math-X-Proxy/3.2 (+safe-server-proxy)",
         "Accept": request.headers.get("Accept", "*/*")[:512],
         "Accept-Language": request.headers.get("Accept-Language", "en-US,en;q=0.8")[:256],
     }
-
     for _ in range(MAX_REDIRECTS + 1):
-        r = session.get(
-            current,
-            headers=headers,
-            timeout=TIMEOUT,
-            allow_redirects=False,
-            stream=True,
-        )
+        r = session.get(current, headers=headers, timeout=TIMEOUT, allow_redirects=False, stream=True)
         if 300 <= r.status_code < 400 and r.headers.get("Location"):
             current = safe_target(urljoin(current, r.headers["Location"]))
             r.close()
             continue
         return current, r
-
     raise ValueError("Too many redirects.")
 
 
 @app.after_request
 def ui_security_headers(response):
-    # Do not inject these into proxied content: they belong to Math-X's own UI.
     if request.path != "/proxy":
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("Referrer-Policy", "no-referrer")
         response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
-        response.headers.setdefault("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'")
+        response.headers.setdefault(
+            "Content-Security-Policy",
+            "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'",
+        )
         response.headers.setdefault("X-Frame-Options", "DENY")
     return response
 
@@ -268,7 +255,7 @@ def health():
         "ok": True,
         "service": "math-x-proxy",
         "mode": "server",
-        "version": "3.1",
+        "version": "3.2",
         "limits": {
             "max_bytes": MAX_BYTES,
             "max_redirects": MAX_REDIRECTS,
@@ -279,26 +266,38 @@ def health():
     }
 
 
+@app.get("/api/status")
+def api_status():
+    return {
+        "ok": True,
+        "service": "math-x-proxy",
+        "version": "3.2",
+        "capabilities": ["http", "https", "html-rewrite", "css-rewrite", "safe-redirects"],
+        "restrictions": ["get-only", "public-destinations-only", "standard-ports-only", "bounded-response"],
+    }
+
+
 @app.get("/proxy")
 def proxy():
     if rate_limited():
-        response = Response(
-            "Rate limit exceeded. Please wait a moment and try again.",
-            status=429,
-        )
+        response = Response("Rate limit exceeded. Please wait a moment and try again.", status=429)
         response.headers["Retry-After"] = str(RATE_WINDOW)
         return response
 
     try:
         target = safe_target(request.args.get("url", ""))
         final_url, r = fetch_remote(target)
+        content_type = r.headers.get("Content-Type", "application/octet-stream")
+        status_code = r.status_code
+        content_language = r.headers.get("Content-Language")
+        etag = r.headers.get("ETag")
+        last_modified = r.headers.get("Last-Modified")
         data = r.raw.read(MAX_BYTES + 1)
         r.close()
 
         if len(data) > MAX_BYTES:
             return Response("Response is too large.", status=413)
 
-        content_type = r.headers.get("Content-Type", "application/octet-stream")
         if "text/html" in content_type.lower():
             charset = r.encoding or "utf-8"
             text = data.decode(charset, errors="replace")
@@ -310,10 +309,10 @@ def proxy():
             data = rewrite_css(text, final_url).encode("utf-8")
             content_type = "text/css; charset=utf-8"
 
-        response = Response(data, status=r.status_code, content_type=content_type)
-        for header in ("Content-Language", "ETag", "Last-Modified"):
-            if r.headers.get(header):
-                response.headers[header] = r.headers[header]
+        response = Response(data, status=status_code, content_type=content_type)
+        for header, value in (("Content-Language", content_language), ("ETag", etag), ("Last-Modified", last_modified)):
+            if value:
+                response.headers[header] = value
         response.headers["X-Math-X-Proxy"] = "server-safe"
         response.headers["Cache-Control"] = "no-store"
         return response

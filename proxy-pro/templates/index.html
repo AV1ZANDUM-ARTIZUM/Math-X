@@ -3,18 +3,47 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Math-X Proxy Pro</title>
+<title>Math-X Proxy Pro — Server</title>
 <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-<header class="top"><div class="brand">MATH-X <span>PROXY</span></div><div class="status">● SECURE MODE</div></header>
+<div class="ambient"></div>
+<header class="top"><div class="brand">⚡ MATH-X <span>SERVER PROXY</span></div><div class="top-actions"><button id="health">♥</button><button id="theme">☾</button></div></header>
 <main>
-<section class="hero"><h1>Browse through Math-X</h1><p>Fast, simple, privacy-friendly web access.</p>
-<div class="bar"><button id="back" title="Alt+Left">←</button><button id="forward" title="Alt+Right">→</button><button id="reload" title="Ctrl+R">↻</button><input id="url" placeholder="Enter a website URL…" autocomplete="off"><button id="go">GO</button></div>
-<div class="quick"><button data-url="https://example.com">Example</button><button data-url="https://wikipedia.org">Wikipedia</button><button data-url="https://www.khanacademy.org">Khan Academy</button><button data-url="https://www.google.com">Google</button></div>
+<section class="home-page">
+<div class="hero"><div class="eyebrow">FULL SERVER-SIDE EDITION</div><h1>Browse the web<br><span>through Math-X.</span></h1><p>The browser UI talks to a real Flask proxy server. HTTP/HTTPS requests are fetched server-side and safe public destinations are checked before every request and redirect.</p></div>
+<div class="searchbox"><input id="url" placeholder="Enter a URL, e.g. https://example.com" autocomplete="off"><button id="go">GO</button></div>
+<div class="cards">
+<article class="card"><div class="card-icon">🌐</div><h2>Server Proxy</h2><p>Pages, stylesheets and common links are routed through the server.</p><div class="quick"><button data-url="https://example.com">Example</button><button data-url="https://www.wikipedia.org">Wikipedia</button><button data-url="https://developer.mozilla.org">MDN</button></div></article>
+<article class="card"><div class="card-icon">🛡️</div><h2>Safety Layer</h2><p>Private/local IP ranges, credentials, unusual ports and unsafe schemes are blocked.</p></article>
+<article class="card"><div class="card-icon">↪️</div><h2>Redirect Handling</h2><p>Redirect destinations are resolved and checked again instead of being blindly followed.</p></article>
+<article class="card"><div class="card-icon">📦</div><h2>Limits</h2><p>GET-only, standard HTTP/HTTPS ports, 5 MB response cap and bounded redirects.</p></article>
+</div>
+<div class="mega-grid"><button class="mega-card" id="openNew">↗ Open proxied page<span>Open the current address in a separate browser tab.</span></button><button class="mega-card" id="serverHealth">🩺 Server diagnostics<span>Check whether the Flask proxy is responding.</span></button><button class="mega-card" id="clear">✕ Clear viewer<span>Return to the Math-X start screen.</span></button></div>
+<div class="feature-grid"><div><b>🔒 SSRF-aware</b><span>DNS resolution is validated and every redirect is revalidated.</span></div><div><b>📡 No arbitrary tunneling</b><span>The endpoint only performs normal HTTP GET requests.</span></div><div><b>⚠️ Real limitation</b><span>Some modern sites require browser APIs, login state, WebSockets or anti-bot behavior that a simple HTTP proxy cannot reproduce.</span></div></div>
 </section>
-<section class="workspace"><div class="tabs"><button class="tab active">Browser</button><button class="tab" id="newTab">＋ New tab</button><button class="tab" id="historyBtn">History</button><button class="tab" id="favoritesBtn">Favorites</button><button class="tab" id="settingsBtn">Settings</button></div><div class="panel"><div id="welcome"><div class="orb">MX</div><h2>Ready when you are.</h2><p>Enter a URL above to begin.</p><div class="tips"><span>⚡ Quick navigation</span><span>⭐ Local favorites</span><span>🕘 Local history</span></div></div><iframe id="frame" hidden sandbox="allow-forms allow-modals allow-popups allow-scripts allow-same-origin"></iframe></div></section>
+<section class="viewer-page" id="viewerPage" hidden><div class="viewer-head"><div><strong id="status">Loading</strong><span id="hint">Server proxy</span></div><div class="viewer-actions"><button id="back">←</button><button id="reload">↻</button><button id="newTab">↗</button></div></div><div id="loading" class="loading"><div class="spinner"></div><b>Fetching through Math-X…</b></div><iframe id="frame" title="Math-X proxied website" sandbox="allow-forms allow-modals allow-popups allow-scripts allow-same-origin"></iframe></section>
 </main>
-<div id="drawer" class="drawer"><button id="closeDrawer">×</button><div id="drawerContent"></div></div>
-<script src="/static/script.js"></script>
+<footer><span>Math-X Proxy Pro</span><span>SERVER MODE</span><span>HTTP/HTTPS only</span><span id="online">● Online</span></footer>
+<div id="toast" class="toast" role="status"></div>
+<script>
+(() => {
+ const $=s=>document.querySelector(s), input=$('#url'), home=document.querySelector('.home-page'), viewer=$('#viewerPage'), frame=$('#frame'), loading=$('#loading'), status=$('#status'), hint=$('#hint'), toast=$('#toast');
+ let current='', history=JSON.parse(localStorage.getItem('mx-server-history')||'[]');
+ const notify=m=>{toast.textContent=m;toast.classList.add('show');clearTimeout(notify.t);notify.t=setTimeout(()=>toast.classList.remove('show'),2200)};
+ const normalize=v=>{v=String(v||'').trim();if(!v)return'';if(/^https?:\/\//i.test(v))return v;if(/^[^\s]+\.[^\s]+/.test(v))return'https://'+v;return'https://www.google.com/search?q='+encodeURIComponent(v)};
+ const proxy=v=>'/proxy?url='+encodeURIComponent(v);
+ function open(v,add=true){const u=normalize(v);if(!u){notify('Enter a URL first.');return}current=u;input.value=u;home.hidden=true;viewer.hidden=false;loading.hidden=false;status.textContent=new URL(u).hostname;hint.textContent='Fetched by the Math-X server';frame.src=proxy(u);if(add){history=[u,...history.filter(x=>x!==u)].slice(0,100);localStorage.setItem('mx-server-history',JSON.stringify(history))}}
+ $('#go').onclick=()=>open(input.value);input.onkeydown=e=>{if(e.key==='Enter')open(input.value)};
+ document.querySelectorAll('[data-url]').forEach(b=>b.onclick=()=>open(b.dataset.url));
+ frame.onload=()=>{loading.hidden=true};
+ $('#reload').onclick=()=>current&&open(current,false);$('#newTab').onclick=()=>current&&window.open(proxy(current),'_blank');$('#openNew').onclick=()=>current?window.open(proxy(current),'_blank'):notify('Open a page first.');
+ $('#clear').onclick=()=>{current='';viewer.hidden=true;home.hidden=false;frame.src='about:blank';input.value=''};
+ $('#back').onclick=()=>{if(history.length>1){const i=history.indexOf(current);const prev=history[i+1]||history[1];if(prev)open(prev,false)}else notify('No previous proxy page.')};
+ $('#health').onclick=$('#serverHealth').onclick=async()=>{try{const r=await fetch('/health');const j=await r.json();notify(j.ok?'♥ Server online — safe server proxy active':'Server check failed')}catch{notify('Server health check failed')}};
+ $('#theme').onclick=()=>{document.body.classList.toggle('light');localStorage.setItem('mx-server-theme',document.body.classList.contains('light')?'light':'dark')};
+ if(localStorage.getItem('mx-server-theme')==='light')document.body.classList.add('light');
+ window.addEventListener('online',()=>$('#online').textContent='● Online');window.addEventListener('offline',()=>$('#online').textContent='● Offline');
+})();
+</script>
 </body></html>

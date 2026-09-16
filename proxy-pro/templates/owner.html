@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Math-X</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#090b10;color:#f5f7fb;display:grid;place-items:center;padding:24px}.panel{width:min(760px,100%);border:1px solid #252b36;border-radius:24px;padding:28px;background:#11151d;box-shadow:0 24px 80px #0008}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}.brand{font-weight:800;font-size:20px}.badge{font-size:11px;letter-spacing:.12em;opacity:.5}.row{display:flex;gap:10px}.row input{flex:1;min-width:0;padding:15px 16px;border-radius:14px;border:1px solid #303744;background:#090c12;color:#fff;font:inherit}.row button{padding:15px 20px;border:0;border-radius:14px;background:#fff;color:#080a0f;font-weight:800;cursor:pointer}.hint{margin-top:16px;color:#8f99a8;font-size:14px;line-height:1.5}.status{margin-top:24px;padding:16px;border-radius:14px;background:#0b0e14;border:1px solid #252b36;color:#aab3c0;font-family:ui-monospace,monospace;font-size:13px}.links{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}.links a{color:#cbd4ff;text-decoration:none;font-size:13px}.hidden{display:none}</style>
+</head>
+<body>
+<main class="panel">
+<div class="top"><div class="brand">Math-X</div><div class="badge">OWNER MODE</div></div>
+<div class="row"><input id="url" placeholder="Enter an HTTP or HTTPS URL" autocomplete="off"><button id="go">Open</button></div>
+<div class="hint">Server-side browsing is available here. Requests are passed through Math-X's bounded proxy rules.</div>
+<div id="status" class="status">Ready.</div>
+<div class="links"><a href="/health">Health</a><a href="/api/status">API status</a><a href="/">Return to cover</a></div>
+</main>
+<script>
+const input=document.querySelector('#url'),button=document.querySelector('#go'),status=document.querySelector('#status');
+function openProxy(){const raw=input.value.trim();if(!raw){status.textContent='Enter a URL first.';return}let value=raw;if(!/^https?:\\/\\//i.test(value)) value='https://'+value;try{const u=new URL(value);if(!['http:','https:'].includes(u.protocol))throw new Error();status.textContent='Opening '+u.href;window.location.href='/proxy?url='+encodeURIComponent(u.href)}catch{status.textContent='Please enter a valid HTTP or HTTPS URL.'}}
+button.onclick=openProxy;input.addEventListener('keydown',e=>{if(e.key==='Enter')openProxy()});
+</script>
+</body>
+</html>

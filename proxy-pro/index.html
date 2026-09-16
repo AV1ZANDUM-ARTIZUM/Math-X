@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <title>Math-X Proxy Pro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="logo">M</span><div><strong>Math-X</strong><small>Proxy Pro</small></div></div>
+    <div class="status"><span></span> Browser-only mode</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">NO PYTHON REQUIRED</div>
+      <h1>Browse through a clean, simple gateway.</h1>
+      <p>Static GitHub Pages interface with direct browsing and a text-reader fallback. No server you have to run.</p>
+      <div class="search">
+        <input id="url" type="url" placeholder="https://example.com" autocomplete="url" spellcheck="false">
+        <button id="go">Go</button>
+      </div>
+      <div class="quick">
+        <button data-url="https://example.com">Example</button>
+        <button data-url="https://developer.mozilla.org">MDN</button>
+        <button data-url="https://github.com">GitHub</button>
+        <button id="clear">Clear</button>
+      </div>
+      <div id="message" class="message" role="status"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div><h2>Viewer</h2><p id="modeText">Choose a URL above.</p></div>
+        <div class="actions">
+          <button id="reader">Reader</button>
+          <button id="open">Open tab</button>
+          <button id="fullscreen">Fullscreen</button>
+        </div>
+      </div>
+      <iframe id="viewer" title="Website viewer" sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-scripts"></iframe>
+      <pre id="textViewer" hidden></pre>
+    </section>
+
+    <section class="cards">
+      <article><b>⚡ Fast</b><span>Everything is static HTML, CSS and JavaScript.</span></article>
+      <article><b>🧩 No backend</b><span>Host the interface directly from GitHub Pages.</span></article>
+      <article><b>🛡️ Safer by design</b><span>No arbitrary TCP tunneling or credential forwarding.</span></article>
+      <article><b>📱 Responsive</b><span>Works on Chromebook, phone and desktop.</span></article>
+    </section>
+  </main>
+
+  <footer>Math-X Proxy Pro · Educational/testing project · Some websites block embedding or browser cross-origin requests.</footer>
+  <script src="script.js"></script>
+</body>
+</html>

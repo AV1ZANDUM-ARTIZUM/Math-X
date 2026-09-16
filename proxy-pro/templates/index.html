@@ -1,116 +1,15 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#f6f7f9">
-<meta name="description" content="Math-X — explore, browse, and make the web yours.">
-<title>Math-X</title>
-<link rel="stylesheet" href="/static/style.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f6f7f9"><meta name="description" content="Math-X — explore, browse, and make the web yours.">
+<title>Math-X</title><link rel="stylesheet" href="/static/style.css">
 <style>
-  :root{--cover-bg:#f6f7f9;--cover-text:#10131a;--cover-muted:#626b7a;--cover-card:rgba(255,255,255,.78);--cover-line:rgba(16,19,26,.09);--cover-accent:#10131a}
-  body{background:var(--cover-bg);color:var(--cover-text)}
-  body.dark{--cover-bg:#080a0f;--cover-text:#f5f7fb;--cover-muted:#9da6b5;--cover-card:rgba(20,24,33,.78);--cover-line:rgba(255,255,255,.1);--cover-accent:#fff}
-  .cover{min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden}
-  .cover-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 18% 12%,rgba(110,150,255,.16),transparent 30%),radial-gradient(circle at 85% 30%,rgba(185,110,255,.12),transparent 28%),linear-gradient(180deg,transparent,rgba(0,0,0,.025))}
-  .cover-header{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:24px clamp(22px,5vw,72px)}
-  .logo{display:flex;align-items:center;gap:11px;font-size:21px;letter-spacing:-.04em}.logo-mark{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:var(--cover-accent);color:var(--cover-bg);font-weight:900}.logo-name{font-weight:800}
-  .nav{display:flex;align-items:center;gap:8px}.nav a,.nav button{border:1px solid var(--cover-line);background:var(--cover-card);color:var(--cover-text);padding:10px 14px;border-radius:12px;text-decoration:none;font:inherit;cursor:pointer;backdrop-filter:blur(12px)}
-  .hero-wrap{position:relative;z-index:1;flex:1;display:grid;place-items:center;padding:70px 22px 55px;text-align:center}
-  .hero{max-width:1000px}.pill{display:inline-flex;padding:8px 12px;border:1px solid var(--cover-line);border-radius:999px;background:var(--cover-card);font-size:12px;font-weight:800;letter-spacing:.12em}
-  .hero h1{font-size:clamp(58px,10vw,128px);line-height:.88;letter-spacing:-.075em;margin:25px 0 28px}.hero h1 span{opacity:.42}.hero p{max-width:680px;margin:0 auto;color:var(--cover-muted);font-size:clamp(17px,2vw,21px);line-height:1.55}
-  .actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:36px}.primary,.secondary{display:inline-flex;align-items:center;gap:8px;padding:15px 20px;border-radius:15px;text-decoration:none;font-weight:800}.primary{background:var(--cover-accent);color:var(--cover-bg)}.secondary{border:1px solid var(--cover-line);background:var(--cover-card);color:var(--cover-text)}
-  .showcase{position:relative;z-index:1;max-width:1050px;width:calc(100% - 44px);margin:0 auto 60px;display:grid;grid-template-columns:1.45fr .85fr;gap:16px}.tile{border:1px solid var(--cover-line);border-radius:24px;background:var(--cover-card);padding:25px;text-align:left;backdrop-filter:blur(18px);box-shadow:0 25px 80px rgba(0,0,0,.06)}.tile h2{margin:0 0 8px;font-size:25px}.tile p{margin:0;color:var(--cover-muted);line-height:1.55}.browser-preview{min-height:230px;display:flex;flex-direction:column;justify-content:space-between}.fake-bar{height:38px;border:1px solid var(--cover-line);border-radius:11px;display:flex;align-items:center;padding:0 10px;gap:7px}.dot{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.25}.fake-url{height:10px;flex:1;border-radius:8px;background:currentColor;opacity:.08}.mini-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}.mini-links span{padding:8px 10px;border-radius:9px;background:rgba(127,127,127,.09);font-size:12px}.side{display:flex;flex-direction:column;gap:16px}.side .tile{flex:1}.number{font-size:12px;letter-spacing:.12em;font-weight:800;opacity:.45;margin-bottom:20px}
-  .footer{position:relative;z-index:2;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;padding:20px clamp(22px,5vw,72px);border-top:1px solid var(--cover-line);color:var(--cover-muted);font-size:13px}.footer a{color:inherit;text-decoration:none}
-  @media(max-width:760px){.showcase{grid-template-columns:1fr}.hero-wrap{padding-top:45px}.cover-header{padding:18px}.footer{padding:18px}.nav a{display:none}}
+:root{--cover-bg:#f6f7f9;--cover-text:#10131a;--cover-muted:#626b7a;--cover-card:rgba(255,255,255,.78);--cover-line:rgba(16,19,26,.09);--cover-accent:#10131a}body{background:var(--cover-bg);color:var(--cover-text)}body.dark{--cover-bg:#080a0f;--cover-text:#f5f7fb;--cover-muted:#9da6b5;--cover-card:rgba(20,24,33,.78);--cover-line:rgba(255,255,255,.1);--cover-accent:#fff}.cover{min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden}.cover-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 18% 12%,rgba(110,150,255,.16),transparent 30%),radial-gradient(circle at 85% 30%,rgba(185,110,255,.12),transparent 28%),linear-gradient(180deg,transparent,rgba(0,0,0,.025))}.cover-header{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:24px clamp(22px,5vw,72px)}.logo{display:flex;align-items:center;gap:11px;font-size:21px;letter-spacing:-.04em}.logo-mark{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:var(--cover-accent);color:var(--cover-bg);font-weight:900;cursor:default;user-select:none}.logo-name{font-weight:800}.nav{display:flex;align-items:center;gap:8px}.nav a,.nav button{border:1px solid var(--cover-line);background:var(--cover-card);color:var(--cover-text);padding:10px 14px;border-radius:12px;text-decoration:none;font:inherit;cursor:pointer;backdrop-filter:blur(12px)}.hero-wrap{position:relative;z-index:1;flex:1;display:grid;place-items:center;padding:70px 22px 55px;text-align:center}.hero{max-width:1000px}.pill{display:inline-flex;padding:8px 12px;border:1px solid var(--cover-line);border-radius:999px;background:var(--cover-card);font-size:12px;font-weight:800;letter-spacing:.12em}.hero h1{font-size:clamp(58px,10vw,128px);line-height:.88;letter-spacing:-.075em;margin:25px 0 28px}.hero h1 span{opacity:.42}.hero p{max-width:680px;margin:0 auto;color:var(--cover-muted);font-size:clamp(17px,2vw,21px);line-height:1.55}.actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:36px}.primary,.secondary{display:inline-flex;align-items:center;gap:8px;padding:15px 20px;border-radius:15px;text-decoration:none;font-weight:800}.primary{background:var(--cover-accent);color:var(--cover-bg)}.secondary{border:1px solid var(--cover-line);background:var(--cover-card);color:var(--cover-text)}.showcase{position:relative;z-index:1;max-width:1050px;width:calc(100% - 44px);margin:0 auto 60px;display:grid;grid-template-columns:1.45fr .85fr;gap:16px}.tile{border:1px solid var(--cover-line);border-radius:24px;background:var(--cover-card);padding:25px;text-align:left;backdrop-filter:blur(18px);box-shadow:0 25px 80px rgba(0,0,0,.06)}.tile h2{margin:0 0 8px;font-size:25px}.tile p{margin:0;color:var(--cover-muted);line-height:1.55}.browser-preview{min-height:230px;display:flex;flex-direction:column;justify-content:space-between}.fake-bar{height:38px;border:1px solid var(--cover-line);border-radius:11px;display:flex;align-items:center;padding:0 10px;gap:7px}.dot{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.25}.fake-url{height:10px;flex:1;border-radius:8px;background:currentColor;opacity:.08}.mini-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}.mini-links span{padding:8px 10px;border-radius:9px;background:rgba(127,127,127,.09);font-size:12px}.side{display:flex;flex-direction:column;gap:16px}.side .tile{flex:1}.number{font-size:12px;letter-spacing:.12em;font-weight:800;opacity:.45;margin-bottom:20px}.footer{position:relative;z-index:2;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;padding:20px clamp(22px,5vw,72px);border-top:1px solid var(--cover-line);color:var(--cover-muted);font-size:13px}.footer a{color:inherit;text-decoration:none}@media(max-width:760px){.showcase{grid-template-columns:1fr}.hero-wrap{padding-top:45px}.cover-header{padding:18px}.footer{padding:18px}.nav a{display:none}}
 </style>
 </head>
-<body>
-<div class="cover">
-  <div class="cover-bg"></div>
-  <header class="cover-header">
-    <a class="logo" href="/" aria-label="Math-X home"><span class="logo-mark">M</span><span class="logo-name">Math-X</span></a>
-    <nav class="nav" aria-label="Main navigation">
-      <a href="/static/index.html">Explore</a>
-      <button id="theme" aria-label="Toggle appearance">☾</button>
-    </nav>
-  </header>
-
-  <main class="hero-wrap">
-    <section class="hero">
-      <div class="pill">WELCOME TO MATH-X</div>
-      <h1>Make the web<br><span>feel like yours.</span></h1>
-      <p>A clean, playful web experience built around discovery, browsing, and simple tools. Open it up and start exploring.</p>
-      <div class="actions">
-        <a class="primary" href="/static/index.html">Open Math-X <span>→</span></a>
-        <a class="secondary" href="#discover">Discover Math-X</a>
-      </div>
-    </section>
-  </main>
-
-  <section class="showcase" id="discover">
-    <article class="tile browser-preview">
-      <div>
-        <div class="number">01 / EXPLORE</div>
-        <h2>Your starting point.</h2>
-        <p>Jump into a familiar browser-style space with tabs, bookmarks, history, themes, search, Reader mode, and more.</p>
-      </div>
-      <div>
-        <div class="fake-bar"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span class="fake-url"></span></div>
-        <div class="mini-links"><span>New Tab</span><span>Bookmarks</span><span>Reader</span><span>History</span><span>Themes</span></div>
-      </div>
-    </article>
-    <div class="side">
-      <article class="tile">
-        <div class="number">02 / PERSONAL</div>
-        <h2>Made to feel familiar.</h2>
-        <p>Customize the experience with appearance, wallpaper, zoom, shortcuts, and local preferences.</p>
-      </article>
-      <article class="tile">
-        <div class="number">03 / READY</div>
-        <h2>One click away.</h2>
-        <p>Open Math-X whenever you want a simple place to start your next web session.</p>
-      </article>
-    </div>
-  </section>
-
-  <footer class="footer">
-    <span>© Math-X</span>
-    <span>Explore freely.</span>
-    <span><a href="/static/index.html">Open</a></span>
-  </footer>
-</div>
+<body><div class="cover"><div class="cover-bg"></div><header class="cover-header"><a class="logo" href="/" aria-label="Math-X home"><span class="logo-mark" id="secretMark">M</span><span class="logo-name">Math-X</span></a><nav class="nav"><a href="/static/index.html">Explore</a><button id="theme" aria-label="Toggle appearance">☾</button></nav></header><main class="hero-wrap"><section class="hero"><div class="pill">WELCOME TO MATH-X</div><h1>Make the web<br><span>feel like yours.</span></h1><p>A clean, playful web experience built around discovery, browsing, and simple tools. Open it up and start exploring.</p><div class="actions"><a class="primary" href="/static/index.html">Open Math-X <span>→</span></a><a class="secondary" href="#discover">Discover Math-X</a></div></section></main><section class="showcase" id="discover"><article class="tile browser-preview"><div><div class="number">01 / EXPLORE</div><h2>Your starting point.</h2><p>Jump into a familiar browser-style space with tabs, bookmarks, history, themes, search, Reader mode, and more.</p></div><div><div class="fake-bar"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span class="fake-url"></span></div><div class="mini-links"><span>New Tab</span><span>Bookmarks</span><span>Reader</span><span>History</span><span>Themes</span></div></div></article><div class="side"><article class="tile"><div class="number">02 / PERSONAL</div><h2>Made to feel familiar.</h2><p>Customize the experience with appearance, wallpaper, zoom, shortcuts, and local preferences.</p></article><article class="tile"><div class="number">03 / READY</div><h2>One click away.</h2><p>Open Math-X whenever you want a simple place to start your next web session.</p></article></div></section><footer class="footer"><span>© Math-X</span><span>Explore freely.</span><span><a href="/static/index.html">Open</a></span></footer></div>
 <script>
-(() => {
-  const theme=document.querySelector('#theme');
-  const saved=localStorage.getItem('mx-cover-theme');
-  if(saved==='dark') document.body.classList.add('dark');
-  theme.textContent=document.body.classList.contains('dark')?'☀':'☾';
-  theme.onclick=()=>{
-    document.body.classList.toggle('dark');
-    const dark=document.body.classList.contains('dark');
-    localStorage.setItem('mx-cover-theme',dark?'dark':'light');
-    theme.textContent=dark?'☀':'☾';
-  };
-
-  // Hidden owner shortcut: click the Math-X mark 7 times, then press M.
-  // This is intentionally not advertised on the cover.
-  let clicks=0;
-  let timer;
-  const mark=document.querySelector('.logo-mark');
-  mark.addEventListener('click',()=>{
-    clicks++;
-    clearTimeout(timer);
-    timer=setTimeout(()=>{clicks=0;},1800);
-  });
-  document.addEventListener('keydown',(event)=>{
-    if((event.key==='m'||event.key==='M') && clicks>=7){
-      event.preventDefault();
-      clicks=0;
-      window.location.href='/static/index.html?mode=server';
-    }
-  });
-})();
-</script>
-</body>
-</html>
+(()=>{const theme=document.querySelector('#theme');const saved=localStorage.getItem('mx-cover-theme');if(saved==='dark')document.body.classList.add('dark');theme.textContent=document.body.classList.contains('dark')?'☀':'☾';theme.onclick=()=>{document.body.classList.toggle('dark');const dark=document.body.classList.contains('dark');localStorage.setItem('mx-cover-theme',dark?'dark':'light');theme.textContent=dark?'☀':'☾'};
+let clicks=0,timer;document.querySelector('#secretMark').addEventListener('click',()=>{clicks++;clearTimeout(timer);timer=setTimeout(()=>clicks=0,4000);});document.addEventListener('keydown',e=>{if((e.key==='m'||e.key==='M')&&clicks>=7){e.preventDefault();clicks=0;window.location.href='/mx-owner';}});})();
+</script></body></html>

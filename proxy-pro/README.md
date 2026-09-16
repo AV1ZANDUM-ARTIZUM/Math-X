@@ -1,28 +1,43 @@
 # Math-X Proxy Pro
 
-A browser-only version of the Math-X Proxy Pro interface. It is made from plain HTML, CSS and JavaScript, so the frontend does **not** need Python and can be hosted on GitHub Pages.
+Math-X Proxy Pro now has two editions:
 
-## Browser-only features
-- Responsive URL bar
-- Direct iframe viewer
-- Reader mode for pages that can be fetched by the configured text-reader service
-- Open in a new tab
-- Fullscreen viewer
-- Quick links
-- Clear/reset controls
-- No API keys in the frontend
-- No arbitrary TCP tunneling
-- No local Python server required for the static version
+## 1. Full server-side edition
 
-## GitHub Pages
-Publish the `proxy-pro` folder as the site root, or copy its three files (`index.html`, `style.css`, `script.js`) into the Pages root.
+`app.py` is a Flask HTTP proxy for normal GET browsing. The web UI sends destinations to `/proxy?url=...`, the server fetches them, and HTML/CSS references are rewritten so common links and assets continue through the proxy.
 
-### Important limitation
-A normal web page cannot freely fetch every other website because of browser CORS rules, and many sites also block iframe embedding. JavaScript alone therefore cannot be a universal web proxy. Reader mode uses a third-party text-reading endpoint and may not work for every destination.
+### Included safety controls
+- HTTP and HTTPS only
+- Standard ports 80/443 only
+- Embedded username/password credentials blocked
+- DNS resolution before requests
+- Public/global IP requirement
+- Local, private, loopback, link-local, multicast and reserved destinations blocked
+- Redirect limit with destination validation on every hop
+- 5 MB response limit
+- Request timeout
+- GET-only proxy endpoint
+- No arbitrary TCP tunneling or WebSockets
+- No forwarding of arbitrary client headers
+- `Cache-Control: no-store` on proxied responses
 
-For a true universal proxy, a server-side component is still required. The original Flask implementation remains in this repository for that use case.
+### Run locally
 
-## Use
-Open `index.html`, enter an `https://` or `http://` address, and choose **Go**, **Reader**, or **Open tab**.
+```bash
+cd proxy-pro
+pip install -r requirements.txt
+python app.py
+```
+
+Then open `http://127.0.0.1:5000`.
+
+For public deployment, put the Flask app behind a proper HTTPS-capable production server and consider adding authentication/rate limiting before exposing it to the Internet. Do not operate it as an unrestricted public/open proxy.
+
+### What “full” means here
+This is a real server-side HTTP proxy, not an iframe-only browser trick. It can fetch HTML, CSS and other normal HTTP resources and rewrite common HTML/CSS URLs. It is **not** a universal browser replacement: sites that depend on WebSockets, browser-integrated APIs, complex authentication, service workers, anti-bot systems, or JavaScript assumptions about their original origin may not work correctly.
+
+## 2. Browser-only edition
+
+`static/index.html`, `static/style.css`, and `static/script.js` remain the GitHub Pages/browser-only edition. That edition does not have permission to bypass CORS or iframe restrictions and does not require Python.
 
 Use responsibly and only access sites you are permitted to access.

@@ -92,6 +92,24 @@
     localStorage.setItem('mx-cover-theme',dark?'dark':'light');
     theme.textContent=dark?'☀':'☾';
   };
+
+  // Hidden owner shortcut: click the Math-X mark 7 times, then press M.
+  // This is intentionally not advertised on the cover.
+  let clicks=0;
+  let timer;
+  const mark=document.querySelector('.logo-mark');
+  mark.addEventListener('click',()=>{
+    clicks++;
+    clearTimeout(timer);
+    timer=setTimeout(()=>{clicks=0;},1800);
+  });
+  document.addEventListener('keydown',(event)=>{
+    if((event.key==='m'||event.key==='M') && clicks>=7){
+      event.preventDefault();
+      clicks=0;
+      window.location.href='/static/index.html?mode=server';
+    }
+  });
 })();
 </script>
 </body>

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Math-X Proxy Pro</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="top"><div class="brand">MATH-X <span>PROXY</span></div><div class="status">● SECURE MODE</div></header>
+<main>
+<section class="hero"><h1>Browse through Math-X</h1><p>Fast, simple, privacy-friendly web access.</p>
+<div class="bar"><button id="back" title="Alt+Left">←</button><button id="forward" title="Alt+Right">→</button><button id="reload" title="Ctrl+R">↻</button><input id="url" placeholder="Enter a website URL…" autocomplete="off"><button id="go">GO</button></div>
+<div class="quick"><button data-url="https://example.com">Example</button><button data-url="https://wikipedia.org">Wikipedia</button><button data-url="https://www.khanacademy.org">Khan Academy</button><button data-url="https://www.google.com">Google</button></div>
+</section>
+<section class="workspace"><div class="tabs"><button class="tab active">Browser</button><button class="tab" id="newTab">＋ New tab</button><button class="tab" id="historyBtn">History</button><button class="tab" id="favoritesBtn">Favorites</button><button class="tab" id="settingsBtn">Settings</button></div><div class="panel"><div id="welcome"><div class="orb">MX</div><h2>Ready when you are.</h2><p>Enter a URL above to begin.</p><div class="tips"><span>⚡ Quick navigation</span><span>⭐ Local favorites</span><span>🕘 Local history</span></div></div><iframe id="frame" hidden sandbox="allow-forms allow-modals allow-popups allow-scripts allow-same-origin"></iframe></div></section>
+</main>
+<div id="drawer" class="drawer"><button id="closeDrawer">×</button><div id="drawerContent"></div></div>
+<script src="/static/script.js"></script>
+</body></html>

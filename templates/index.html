@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Math-X Proxy</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="shell">
+    <section class="card">
+      <div class="badge">MATH-X</div>
+      <h1>Web Proxy</h1>
+      <p class="subtitle">Fetch a public web resource through the Math-X proxy.</p>
+
+      <form id="proxy-form">
+        <label for="url">Destination URL</label>
+        <div class="row">
+          <input id="url" name="url" type="url" placeholder="https://example.com" autocomplete="off" required>
+          <button type="submit">Go</button>
+        </div>
+      </form>
+
+      <div class="examples">
+        <button class="example" data-url="https://example.com">Example.com</button>
+        <button class="example" data-url="https://httpbin.org/get">HTTPBin JSON</button>
+      </div>
+
+      <div id="status" class="status" hidden></div>
+      <iframe id="result" title="Proxy result" sandbox="allow-forms allow-modals allow-popups allow-scripts" hidden></iframe>
+
+      <p class="note">For learning and testing. Private/local addresses, URL credentials, and oversized responses are blocked.</p>
+    </section>
+  </main>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -20,6 +20,7 @@ TIMEOUT = (
 MAX_REDIRECTS = int(os.getenv("MATH_X_MAX_REDIRECTS", 5))
 RATE_LIMIT = int(os.getenv("MATH_X_RATE_LIMIT", 30))
 RATE_WINDOW = int(os.getenv("MATH_X_RATE_WINDOW", 60))
+MAX_URL_LENGTH = int(os.getenv("MATH_X_MAX_URL_LENGTH", 4096))
 
 BLOCKED_HOSTS = {"localhost", "localhost.localdomain", "0.0.0.0", "::1"}
 ALLOWED_SCHEMES = {"http", "https"}
@@ -53,6 +54,8 @@ def safe_target(raw):
     if not raw or not isinstance(raw, str):
         raise ValueError("A URL is required.")
     raw = raw.strip()
+    if len(raw) > MAX_URL_LENGTH:
+        raise ValueError("URL is too long.")
     p = urlparse(raw)
     scheme = p.scheme.lower()
     if scheme not in ALLOWED_SCHEMES or not p.hostname:
@@ -117,7 +120,6 @@ def proxify_url(value, base_url):
 
 
 def rewrite_css(text, base_url):
-    # CSS url(...) resources.
     def url_repl(match):
         raw = match.group(1).strip().strip("\"'")
         rewritten = proxify_url(raw, base_url)
@@ -125,7 +127,6 @@ def rewrite_css(text, base_url):
 
     text = re.sub(r"url\(\s*([^)]*?)\s*\)", url_repl, text, flags=re.I)
 
-    # CSS @import "..." resources.
     def import_repl(match):
         raw = match.group(2)
         rewritten = proxify_url(raw, base_url)
@@ -175,7 +176,6 @@ def rewrite_html(text, base_url):
 
     text = pattern.sub(attr_repl, text)
 
-    # Responsive image URLs.
     srcset_pattern = re.compile(
         r'(?P<attr>\bsrcset)(?P<eq>\s*=\s*)(?P<q>["\'])(?P<value>.*?)(?P=q)',
         re.I | re.S,
@@ -198,7 +198,6 @@ def rewrite_html(text, base_url):
 
     text = re.sub(r"<style\b[^>]*>(.*?)</style>", style_repl, text, flags=re.I | re.S)
 
-    # HTML meta refresh: <meta content="0; url=/next">.
     def refresh_repl(match):
         content = match.group(1)
         url_match = re.search(r"(url\s*=\s*)([^;]+)", content, flags=re.I)
@@ -246,6 +245,18 @@ def fetch_remote(target):
     raise ValueError("Too many redirects.")
 
 
+@app.after_request
+def ui_security_headers(response):
+    # Do not inject these into proxied content: they belong to Math-X's own UI.
+    if request.path != "/proxy":
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("Referrer-Policy", "no-referrer")
+        response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        response.headers.setdefault("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+    return response
+
+
 @app.get("/")
 def home():
     return render_template("index.html")
@@ -257,12 +268,13 @@ def health():
         "ok": True,
         "service": "math-x-proxy",
         "mode": "server",
-        "version": "3.0",
+        "version": "3.1",
         "limits": {
             "max_bytes": MAX_BYTES,
             "max_redirects": MAX_REDIRECTS,
             "rate_limit": RATE_LIMIT,
             "rate_window_seconds": RATE_WINDOW,
+            "max_url_length": MAX_URL_LENGTH,
         },
     }
 
